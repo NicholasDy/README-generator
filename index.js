@@ -1,20 +1,21 @@
 const inquirer = require('inquirer');
 const fs = require('fs');
 
+
 const generateHTML = (answers) =>
     `#  ${answers.name}
 
-## Project Name - ${answers.name}
+## Project Name - ${answers.name} ${answers.license}
 
 ### Table of Contents 
-1. User Story[Go to Real Cool Heading section](###user-story)
-2. Description[Go to Real Cool Heading section](###description-of-the-app)
-3. Installation Instructions[Go to Real Cool Heading section](###installation-instructions)
-4. Usage[Go to Real Cool Heading section](###usage)
-5. Contributors[Go to Real Cool Heading section](###contributors)
-6. Tests Done[Go to Real Cool Heading section](###tests-done)
-7. Contact Info[Go to Real Cool Heading section](###contact-info)
-9. License[Go to Real Cool Heading section](###license)
+1. [User Story](###user-story)
+2. [Description](###description-of-the-app)
+3. [Intallition Instructions](###installation-instructions)
+4. [Usage](###usage)
+5. [Contributors](###contributors)
+6. [Tests Done](###tests-done)
+7. [Questions](###questions)
+9. [License](###license)
 
 ### User Story - 
 ${answers.userStory}
@@ -28,9 +29,20 @@ ${answers.installationInstructions}
 ### Usage- 
 ${answers.usage}
 
+### Tests-Done
+${answers.test}
+
+### Questions
+GitHub User Name: ${answers.githubUsername}
+Email: ${answers.email}
+
+### License
+The license that covers this project is the one used by $
+
+
 `;
 
-inquirer 
+inquirer
     .prompt([
         {
             type: "input",
@@ -80,37 +92,31 @@ inquirer
         {
             type: 'list',
             name: "license",
-            message: "What type of license do you need?",
-            choices: ['Strong Restrictions', 'Mild Restrictions', 'No Restrictions']
+            message: "What type of license do you want to base yours off of?",
+            choices: ['MIT', 'Apache', 'IBM']
         },
     ])
-    .then (answers =>{
+    .then(answers => {
         const htmlPageContent = generateHTML(answers);
 
         fs.writeFile(`README.md`, htmlPageContent, (err) =>
-          err ? console.log(err) : console.log('Successfully created your ReadMe!')
+            err ? console.log(err) : console.log('Successfully created your ReadMe!')
         );
 
-        let licenseEl = answers.license
-        generateLicense(licenseEl)   
-    })
-
-
-
-    function generateLicense(licenseEl){
-        switch(licenseEl){
-            case "Strong Restrictions":
-                // creates the text file with a strong restriction
+        switch (answers.license) {
+            case "MIT":
+                answers.license = '[![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)'
+                licenseUsed = 'MIT'
                 break;
-            case "Mild Restrictions":
-                // creates the text file with a Mild restriction
+            case "Apache":
+                answers.license = '[![License](https://img.shields.io/badge/License-Apache%202.0-blue.svg)](https://opensource.org/licenses/Apache-2.0)'
+                licenseUsed = 'Apache'
                 break;
-            case "No Restrictions":
-                // creates the text file with no restrictions
+            case "IBM":
+                answers.license = '[![License: IPL 1.0](https://img.shields.io/badge/License-IPL%201.0-blue.svg)](https://opensource.org/licenses/IPL-1.0)'
+                licenseUsed = 'IBM'
                 break;
         }
-
-    }
+    })
 
     // the table of contents will take each of the sections and list them in order on the page already hard coded out
-    // adding a license.txt to the file
